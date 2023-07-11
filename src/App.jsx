@@ -1,6 +1,6 @@
+import React, { useState, useEffect } from 'react';
 import './App.css';
 import axios from 'axios';
-import { useState, useEffect } from 'react';
 
 function App() {
   const [search, setSearch] = useState("");
@@ -8,6 +8,7 @@ function App() {
   const [loading, setLoading] = useState(false);
   const [error, setError] = useState(null);
   const [page, setPage] = useState(0);
+  const [activePage, setActivePage] = useState(0);
 
   const getAllData = async (e) => {
     if (e) e.preventDefault();
@@ -31,6 +32,7 @@ function App() {
 
   const handlePagination = (pageNumber) => {
     setPage(pageNumber);
+    setActivePage(pageNumber);
   }
 
   const formatDate = (timestamp) => {
@@ -41,7 +43,7 @@ function App() {
   return (
     <div className="container">
       <h1 className="title">Search Live News</h1>
-      <form onSubmit={getAllData}>
+      <form onSubmit={getAllData} className="search-form">
         <input
           type="search"
           className="search-input"
@@ -52,7 +54,7 @@ function App() {
         <button type="submit" className="search-btn">Search</button>
       </form>
 
-      {loading && <p>Loading...</p>}
+      {loading && <p className="loading-msg">Loading...</p>}
       {error && <p className="error-msg">{error}</p>}
 
       <div className="news-container">
@@ -69,12 +71,12 @@ function App() {
         )}
       </div>
 
-      {Array.isArray(data) && data.length > 0 && !loading && !error && (
+      {search ==[] && (
         <div className="pagination-container">
           {[...Array(3)].map((_, i) => (
             <button
               key={i}
-              className={`pagination-btn ${i === page ? 'active' : ''}`}
+              className={`pagination-btn ${i === activePage ? 'active' : ''}`}
               onClick={() => handlePagination(i)}
             >
               {i + 1}
