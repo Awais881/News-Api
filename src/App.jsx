@@ -12,6 +12,7 @@ function App() {
     try {
       let res = await axios.get(`http://hn.algolia.com/api/v1/search?query=${search}`)
       setData(res.data.hits)
+      console.log(res.data);
     } catch (error) {
       console.log("Error: ", error)
     }
@@ -39,9 +40,9 @@ function App() {
         {Array.isArray(data) && data.length > 0 ? (
           data.map((eachNews, i) => (
             <div className="card" key={i}>
+              <p className="news-author"> {eachNews.created_at}</p>
               <h2 className="news-title">{eachNews.title}</h2>
-              <p className="news-url">{eachNews.url}</p>
-              <p className="news-author">By {eachNews.author}</p>
+              <a className="news-url" href={eachNews.url} target='_blank'>{eachNews.url}</a>
             </div>
           ))
         ) : (
