@@ -5,22 +5,38 @@ import { useState, useEffect } from 'react';
 function App() {
   const [search, setSearch] = useState("");
   const [data, setData] = useState([]);
+  const [loading, setLoading] = useState(false);
+  const [error, setError] = useState(null);
+  const [page, setPage] = useState(0);
 
   const getAllData = async (e) => {
     if (e) e.preventDefault();
 
+    setLoading(true);
+    setError(null);
+
     try {
-      let res = await axios.get(`http://hn.algolia.com/api/v1/search?query=${search}`)
-      setData(res.data.hits)
-      console.log(res.data);
+      let res = await axios.get(`http://hn.algolia.com/api/v1/search?query=${search}&page=${page}`);
+      setData(res.data.hits);
     } catch (error) {
-      console.log("Error: ", error)
+      setError("Error fetching news data.");
     }
+
+    setLoading(false);
   }
 
   useEffect(() => {
     getAllData();
-  }, [search])
+  }, [search, page])
+
+  const handlePagination = (pageNumber) => {
+    setPage(pageNumber);
+  }
+
+  const formatDate = (timestamp) => {
+    const date = new Date(timestamp);
+    return date.toLocaleString();
+  }
 
   return (
     <div className="container">
@@ -36,19 +52,36 @@ function App() {
         <button type="submit" className="search-btn">Search</button>
       </form>
 
+      {loading && <p>Loading...</p>}
+      {error && <p className="error-msg">{error}</p>}
+
       <div className="news-container">
         {Array.isArray(data) && data.length > 0 ? (
           data.map((eachNews, i) => (
             <div className="card" key={i}>
-              <p className="news-author"> {eachNews.created_at}</p>
+              <p className="news-author">{formatDate(eachNews.created_at)}</p>
               <h2 className="news-title">{eachNews.title}</h2>
               <a className="news-url" href={eachNews.url} target='_blank'>{eachNews.url}</a>
             </div>
           ))
         ) : (
-          <p className="no-data-msg">No data available</p>
+          !loading && <p className="no-data-msg">No data available</p>
         )}
       </div>
+
+      {Array.isArray(data) && data.length > 0 && !loading && !error && (
+        <div className="pagination-container">
+          {[...Array(3)].map((_, i) => (
+            <button
+              key={i}
+              className={`pagination-btn ${i === page ? 'active' : ''}`}
+              onClick={() => handlePagination(i)}
+            >
+              {i + 1}
+            </button>
+          ))}
+        </div>
+      )}
     </div>
   );
 }
