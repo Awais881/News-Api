@@ -17,7 +17,7 @@ function Page() {
     setError(null);
 
     try {
-      let res = await axios.get(`http://hn.algolia.com/api/v1/search?query=${search}&page=${page}`);
+      let res = await axios.get(`https://hn.algolia.com/api/v1/search?query=${search}&page=${page}`);
       setData(res.data.hits);
     } catch (error) {
       setError("Error fetching news data.");
@@ -60,11 +60,16 @@ function Page() {
       <div className="news-container">
         {Array.isArray(data) && data.length > 0 ? (
           data.map((eachNews, i) => (
+             eachNews.title? 
             <div className="card" key={i}>
+             
               <p className="news-author">{formatDate(eachNews.created_at)}</p>
               <h2 className="news-title">{eachNews.title}</h2>
-              <a className="news-url" href={eachNews.url} target='_blank'>{eachNews.url}</a>
+              <a className="news-url" href={eachNews.url} target='_blank' >{eachNews.url}</a>
+            
             </div>
+            : null
+            
           ))
         ) : (
           !loading && <p className="no-data-msg">No data available</p>
