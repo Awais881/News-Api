@@ -41,8 +41,12 @@ function Page() {
   }
 
   return (
-    <div className="container">
+    <>
+      <nav>
+
       <h1 className="title">Search Live News</h1>
+      </nav>
+    <div className="container">
       <form onSubmit={getAllData} className="search-form">
         <input
           type="search"
@@ -90,6 +94,7 @@ function Page() {
         </div>
       )}
     </div>
+    </>
   );
 }
 
